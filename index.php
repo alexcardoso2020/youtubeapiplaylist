@@ -19,6 +19,8 @@
 		
 		//Load json from Youtube API
 		$playlistVids = json_decode(file_get_contents('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&pageToken='.$pagination.'&maxResults='.$maxResults.'&playlistId='.$playlistID.'&key='.$tokenKey.''));
+		
+		$videoList['total'] = (isset($playlistVids->pageInfo->totalResults)) ? $playlistVids->pageInfo->totalResults : '';
 
 		//Get var for previous and next pagination
 		$videoList['prev'] = (isset($playlistVids->prevPageToken)) ? $playlistVids->prevPageToken : '';
@@ -27,6 +29,7 @@
 		foreach($playlistVids->items as $k => $item):
 			$vidID = $item->snippet->resourceId->videoId;
 			$videoList['videos'][$k] = [
+				'position' => $item->snippet->position,
 				'title' => $item->snippet->title,
 				'img'   => 'https://i.ytimg.com/vi/'.$vidID.'/maxresdefault.jpg',
 				'link'  => 'https://www.youtube.com/watch?v='.$vidID,
@@ -37,6 +40,14 @@
 	}
 	echo '<pre>';
 	print_r(youtubePlaylist());
+	echo '</pre>';
 ?>
+	
+<br><hr>	
+<?php
+$pr = array();
+$pr = youtubePlaylist();
+?>
+<a href="playlist001.php?page=<?php echo $pr['next'];?>">próximo</a>	
 </body>
 </html>
